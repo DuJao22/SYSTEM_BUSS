@@ -1,0 +1,187 @@
+{% extends "base.html" %}
+
+{% block title %}Bilhete {{ ticket.ticket_number }} - Sistema de Reserva de Ônibus{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto space-y-8">
+    <!-- Header -->
+    <div class="text-center">
+        <h1 class="text-3xl font-bold text-gray-800 mb-2">
+            <i class="fas fa-ticket-alt mr-3 text-blue-600"></i>
+            Bilhete de Passagem
+        </h1>
+        <p class="text-gray-600">Sua passagem foi confirmada com sucesso!</p>
+    </div>
+
+    <!-- Ticket -->
+    <div class="bg-white rounded-2xl shadow-2xl overflow-hidden border">
+        <!-- Header do Bilhete -->
+        <div class="bg-gradient-to-r from-blue-600 to-purple-700 text-white p-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h2 class="text-2xl font-bold">BusReserva</h2>
+                    <p class="text-blue-100">Sistema de Reserva de Ônibus</p>
+                </div>
+                <div class="text-right">
+                    <div class="bg-white/20 backdrop-blur-sm rounded-lg px-4 py-2">
+                        <div class="text-sm text-blue-100">Bilhete</div>
+                        <div class="text-xl font-bold">{{ ticket.ticket_number }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Conteúdo do Bilhete -->
+        <div class="p-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- Informações da Viagem -->
+                <div>
+                    <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center">
+                        <i class="fas fa-route mr-2 text-blue-600"></i>
+                        Detalhes da Viagem
+                    </h3>
+                    
+                    <div class="space-y-4">
+                        <div class="flex items-center">
+                            <div class="bg-blue-100 p-2 rounded-lg mr-3">
+                                <i class="fas fa-map-marker-alt text-blue-600"></i>
+                            </div>
+                            <div>
+                                <div class="text-sm text-gray-500">Origem</div>
+                                <div class="font-semibold text-gray-800">{{ ticket.origin }}</div>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center">
+                            <div class="bg-purple-100 p-2 rounded-lg mr-3">
+                                <i class="fas fa-flag-checkered text-purple-600"></i>
+                            </div>
+                            <div>
+                                <div class="text-sm text-gray-500">Destino</div>
+                                <div class="font-semibold text-gray-800">{{ ticket.destination }}</div>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center">
+                            <div class="bg-green-100 p-2 rounded-lg mr-3">
+                                <i class="fas fa-clock text-green-600"></i>
+                            </div>
+                            <div>
+                                <div class="text-sm text-gray-500">Horário de Partida</div>
+                                <div class="font-semibold text-gray-800">{{ ticket.departure_time }}</div>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center">
+                            <div class="bg-orange-100 p-2 rounded-lg mr-3">
+                                <i class="fas fa-clock text-orange-600"></i>
+                            </div>
+                            <div>
+                                <div class="text-sm text-gray-500">Horário de Chegada</div>
+                                <div class="font-semibold text-gray-800">{{ ticket.arrival_time }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Informações do Passageiro e Ônibus -->
+                <div>
+                    <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center">
+                        <i class="fas fa-user mr-2 text-blue-600"></i>
+                        Informações do Passageiro
+                    </h3>
+                    
+                    <div class="space-y-4 mb-6">
+                        <div>
+                            <div class="text-sm text-gray-500">Nome</div>
+                            <div class="font-semibold text-gray-800">{{ ticket.passenger_name }}</div>
+                        </div>
+                        
+                        <div>
+                            <div class="text-sm text-gray-500">CPF</div>
+                            <div class="font-semibold text-gray-800">{{ ticket.passenger_cpf }}</div>
+                        </div>
+                        
+                        <div>
+                            <div class="text-sm text-gray-500">Contato</div>
+                            <div class="font-semibold text-gray-800">{{ ticket.passenger_contact }}</div>
+                        </div>
+                    </div>
+
+                    <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center">
+                        <i class="fas fa-bus mr-2 text-blue-600"></i>
+                        Informações do Ônibus
+                    </h3>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <div class="text-sm text-gray-500">Tipo</div>
+                            <div class="font-semibold text-gray-800">{{ ticket.bus_type }}</div>
+                        </div>
+                        
+                        <div>
+                            <div class="text-sm text-gray-500">Placa</div>
+                            <div class="font-semibold text-gray-800">{{ ticket.plate }}</div>
+                        </div>
+                        
+                        <div>
+                            <div class="text-sm text-gray-500">Assento</div>
+                            <div class="font-semibold text-gray-800">{{ ticket.seat_number }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Preço e Status -->
+            <div class="mt-8 pt-6 border-t border-gray-200">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <div class="text-sm text-gray-500">Data da Reserva</div>
+                        <div class="font-semibold text-gray-800">{{ ticket.created_at.split(' ')[0] }}</div>
+                    </div>
+                    <div>
+                        <div class="text-sm text-gray-500">Status</div>
+                        <div class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-semibold">
+                            {{ ticket.status|title }}
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-sm text-gray-500">Valor Total</div>
+                        <div class="text-3xl font-bold text-green-600">R$ {{ "%.2f"|format(ticket.price) }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer com código QR simulado -->
+        <div class="bg-gray-50 p-6 border-t">
+            <div class="flex items-center justify-between">
+                <div class="text-sm text-gray-600">
+                    <p><strong>Importante:</strong> Apresente este bilhete no embarque</p>
+                    <p>Chegue ao terminal com 30 minutos de antecedência</p>
+                </div>
+                <div class="bg-white p-4 rounded-lg border-2 border-dashed border-gray-300">
+                    <div class="w-16 h-16 bg-gray-200 flex items-center justify-center rounded">
+                        <i class="fas fa-qrcode text-2xl text-gray-500"></i>
+                    </div>
+                    <div class="text-xs text-center mt-2 text-gray-500">QR Code</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="flex justify-center space-x-4">
+        <a href="{{ url_for('user_dashboard') }}" 
+           class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition-colors font-semibold">
+            <i class="fas fa-list mr-2"></i>
+            Ver Todas as Reservas
+        </a>
+        <a href="{{ url_for('index') }}" 
+           class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg transition-colors font-semibold">
+            <i class="fas fa-plus mr-2"></i>
+            Nova Reserva
+        </a>
+    </div>
+</div>
+{% endblock %}

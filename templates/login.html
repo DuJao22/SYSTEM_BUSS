@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block title %}Login - Sistema de Reserva de Ônibus{% endblock %}
+
+{% block content %}
+<div class="max-w-md mx-auto">
+    <div class="bg-white rounded-xl shadow-lg p-8">
+        <div class="text-center mb-8">
+            <i class="fas fa-sign-in-alt text-4xl text-blue-600 mb-3"></i>
+            <h2 class="text-2xl font-bold text-gray-800">Entrar no Sistema</h2>
+            <p class="text-gray-600 mt-2">Acesse sua conta para gerenciar suas reservas</p>
+        </div>
+
+        <form method="POST" class="space-y-6">
+            <div>
+                <label for="username" class="block text-sm font-medium text-gray-700 mb-2">
+                    <i class="fas fa-user mr-1"></i>
+                    Nome de usuário
+                </label>
+                <input type="text" 
+                       id="username" 
+                       name="username" 
+                       required 
+                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                       placeholder="Digite seu nome de usuário">
+            </div>
+
+            <div>
+                <label for="password" class="block text-sm font-medium text-gray-700 mb-2">
+                    <i class="fas fa-lock mr-1"></i>
+                    Senha
+                </label>
+                <input type="password" 
+                       id="password" 
+                       name="password" 
+                       required 
+                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                       placeholder="Digite sua senha">
+            </div>
+
+            <button type="submit" 
+                    class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-lg transition-colors">
+                <i class="fas fa-sign-in-alt mr-2"></i>
+                Entrar
+            </button>
+        </form>
+
+        <div class="mt-6 text-center">
+            <p class="text-gray-600">
+                Não tem uma conta?
+                <a href="{{ url_for('register') }}" class="text-blue-600 hover:text-blue-800 font-semibold">
+                    Cadastre-se aqui
+                </a>
+            </p>
+        </div>
+
+        <div class="mt-6 p-4 bg-gray-50 rounded-lg">
+            <h4 class="font-semibold text-gray-700 mb-2">Contas de teste:</h4>
+            <div class="text-sm text-gray-600 space-y-1">
+                <p><strong>Admin:</strong> admin / admin123</p>
+                <p><strong>Usuário:</strong> Crie sua conta usando o botão "Cadastrar"</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

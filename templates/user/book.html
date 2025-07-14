@@ -1,0 +1,237 @@
+{% extends "base.html" %}
+
+{% block title %}Reservar Passagem - Sistema de Reserva de Ônibus{% endblock %}
+
+{% block content %}
+<div class="space-y-8">
+    <!-- Route Header -->
+    <div class="bg-gradient-to-r from-blue-600 to-purple-700 rounded-xl text-white p-6">
+        <h1 class="text-3xl font-bold mb-2">
+            <i class="fas fa-ticket-alt mr-3"></i>
+            Reservar Passagem
+        </h1>
+        <div class="flex items-center text-xl">
+            <span>{{ route.origin }}</span>
+            <i class="fas fa-arrow-right mx-3"></i>
+            <span>{{ route.destination }}</span>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <!-- Route Details -->
+        <div class="bg-white rounded-xl shadow-lg p-6">
+            <h2 class="text-xl font-bold text-gray-800 mb-4">
+                <i class="fas fa-info-circle mr-2"></i>
+                Detalhes da Viagem
+            </h2>
+            
+            <div class="space-y-4">
+                <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <span class="text-gray-600">
+                        <i class="fas fa-clock mr-2"></i>
+                        Partida
+                    </span>
+                    <span class="font-semibold">{{ route.departure_time }}</span>
+                </div>
+                
+                <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <span class="text-gray-600">
+                        <i class="fas fa-flag-checkered mr-2"></i>
+                        Chegada
+                    </span>
+                    <span class="font-semibold">{{ route.arrival_time }}</span>
+                </div>
+                
+                <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <span class="text-gray-600">
+                        <i class="fas fa-bus mr-2"></i>
+                        Tipo de Ônibus
+                    </span>
+                    <span class="font-semibold">{{ route.bus_type }}</span>
+                </div>
+                
+                <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <span class="text-gray-600">
+                        <i class="fas fa-id-card mr-2"></i>
+                        Placa
+                    </span>
+                    <span class="font-semibold">{{ route.plate }}</span>
+                </div>
+                
+                <div class="flex items-center justify-between p-3 bg-green-50 rounded-lg border border-green-200">
+                    <span class="text-green-700">
+                        <i class="fas fa-money-bill-wave mr-2"></i>
+                        Preço
+                    </span>
+                    <span class="font-bold text-2xl text-green-600">R$ {{ "%.2f"|format(route.price) }}</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Seat Selection and Booking Form -->
+        <div class="bg-white rounded-xl shadow-lg p-6">
+            <h2 class="text-xl font-bold text-gray-800 mb-4">
+                <i class="fas fa-chair mr-2"></i>
+                Seleção de Assento
+            </h2>
+
+            <form method="POST" action="{{ url_for('confirm_booking') }}" class="space-y-6">
+                <input type="hidden" name="route_id" value="{{ route.id }}">
+                
+                <!-- Seat Grid -->
+                <div class="border rounded-lg p-4 bg-gray-50">
+                    <div class="text-center mb-4">
+                        <div class="bg-gray-800 text-white px-4 py-2 rounded-lg inline-block">
+                            <i class="fas fa-steering-wheel mr-2"></i>
+                            Motorista
+                        </div>
+                    </div>
+                    
+                    <!-- Layout de ônibus real com corredor central -->
+                    <div class="max-w-md mx-auto">
+                        {% for seat in range(1, route.seats + 1) %}
+                            {% set row = ((seat - 1) // 4) + 1 %}
+                            {% set col = ((seat - 1) % 4) + 1 %}
+                            
+                            <!-- Início de uma nova fileira -->
+                            {% if col == 1 %}
+                                <div class="flex items-center justify-center mb-2 space-x-2">
+                                    <div class="text-xs text-gray-500 w-6 text-center">{{ row }}</div>
+                            {% endif %}
+                            
+                            <!-- Assentos do lado esquerdo (colunas 1 e 2) -->
+                            {% if col <= 2 %}
+                            {% if seat in occupied_seats %}
+                                <div class="bg-red-200 border-2 border-red-400 p-2 text-center rounded cursor-not-allowed w-12 h-12 flex flex-col items-center justify-center">
+                                    <i class="fas fa-times text-red-600"></i>
+                                    <div class="text-xs">{{ seat }}</div>
+                                </div>
+                            {% else %}
+                                <label class="block">
+                                    <input type="radio" name="seat_number" value="{{ seat }}" required class="sr-only peer">
+                                    <div class="bg-green-100 border-2 border-green-300 p-2 text-center rounded cursor-pointer peer-checked:bg-blue-500 peer-checked:text-white peer-checked:border-blue-600 hover:bg-green-200 transition-colors w-12 h-12 flex flex-col items-center justify-center">
+                                        <i class="fas fa-chair"></i>
+                                        <div class="text-xs">{{ seat }}</div>
+                                    </div>
+                                </label>
+                            {% endif %}
+                            {% endif %}
+                            
+                            <!-- Corredor central após a segunda coluna -->
+                            {% if col == 2 %}
+                                <div class="w-8 flex items-center justify-center">
+                                    <div class="h-px bg-gray-300 w-full"></div>
+                                </div>
+                            {% endif %}
+                            
+                            <!-- Assentos do lado direito (colunas 3 e 4) -->
+                            {% if col >= 3 %}
+                            {% if seat in occupied_seats %}
+                                <div class="bg-red-200 border-2 border-red-400 p-2 text-center rounded cursor-not-allowed w-12 h-12 flex flex-col items-center justify-center">
+                                    <i class="fas fa-times text-red-600"></i>
+                                    <div class="text-xs">{{ seat }}</div>
+                                </div>
+                            {% else %}
+                                <label class="block">
+                                    <input type="radio" name="seat_number" value="{{ seat }}" required class="sr-only peer">
+                                    <div class="bg-green-100 border-2 border-green-300 p-2 text-center rounded cursor-pointer peer-checked:bg-blue-500 peer-checked:text-white peer-checked:border-blue-600 hover:bg-green-200 transition-colors w-12 h-12 flex flex-col items-center justify-center">
+                                        <i class="fas fa-chair"></i>
+                                        <div class="text-xs">{{ seat }}</div>
+                                    </div>
+                                </label>
+                            {% endif %}
+                            {% endif %}
+                            
+                            <!-- Fim da fileira -->
+                            {% if col == 4 %}
+                                    <div class="text-xs text-gray-500 w-6 text-center">{{ row }}</div>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                    
+                    <!-- Legend -->
+                    <div class="flex justify-center mt-4 space-x-4 text-sm">
+                        <div class="flex items-center">
+                            <div class="w-4 h-4 bg-green-100 border border-green-300 rounded mr-2"></div>
+                            <span>Disponível</span>
+                        </div>
+                        <div class="flex items-center">
+                            <div class="w-4 h-4 bg-blue-500 rounded mr-2"></div>
+                            <span>Selecionado</span>
+                        </div>
+                        <div class="flex items-center">
+                            <div class="w-4 h-4 bg-red-200 border border-red-400 rounded mr-2"></div>
+                            <span>Ocupado</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Indicação do corredor -->
+                    <div class="text-center mt-2 text-xs text-gray-500">
+                        <i class="fas fa-arrows-alt-h mr-1"></i>
+                        Corredor Central
+                    </div>
+                </div>
+
+                <!-- Passenger Information -->
+                <div class="space-y-4">
+                    <h3 class="font-semibold text-gray-800">
+                        <i class="fas fa-user mr-2"></i>
+                        Dados do Passageiro
+                    </h3>
+                    
+                    <div>
+                        <label for="passenger_name" class="block text-sm font-medium text-gray-700 mb-2">
+                            Nome Completo
+                        </label>
+                        <input type="text" 
+                               id="passenger_name" 
+                               name="passenger_name" 
+                               required 
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                               placeholder="Digite o nome completo">
+                    </div>
+                    
+                    <div>
+                        <label for="passenger_cpf" class="block text-sm font-medium text-gray-700 mb-2">
+                            CPF
+                        </label>
+                        <input type="text" 
+                               id="passenger_cpf" 
+                               name="passenger_cpf" 
+                               required 
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                               placeholder="000.000.000-00">
+                    </div>
+                    
+                    <div>
+                        <label for="passenger_contact" class="block text-sm font-medium text-gray-700 mb-2">
+                            Telefone/WhatsApp
+                        </label>
+                        <input type="tel" 
+                               id="passenger_contact" 
+                               name="passenger_contact" 
+                               required 
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                               placeholder="(00) 90000-0000">
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="flex space-x-4">
+                    <a href="{{ url_for('index') }}" 
+                       class="flex-1 bg-gray-500 hover:bg-gray-600 text-white font-semibold py-3 px-4 rounded-lg text-center transition-colors">
+                        <i class="fas fa-arrow-left mr-2"></i>
+                        Voltar
+                    </a>
+                    <button type="submit" 
+                            class="flex-1 bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-4 rounded-lg transition-colors">
+                        <i class="fas fa-check mr-2"></i>
+                        Confirmar Reserva
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

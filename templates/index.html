@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+
+{% block title %}Início - Sistema de Reserva de Ônibus{% endblock %}
+
+{% block content %}
+<div class="space-y-8">
+    <!-- Hero Section -->
+    <div class="bg-gradient-to-r from-blue-600 to-purple-700 rounded-2xl text-white p-8 md:p-12">
+        <div class="text-center">
+            <h1 class="text-4xl md:text-6xl font-bold mb-4">
+                <i class="fas fa-bus mr-3"></i>
+                BusReserva
+            </h1>
+            <p class="text-xl md:text-2xl mb-8 text-blue-100">
+                Reserve sua passagem de ônibus de forma rápida e segura
+            </p>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
+                <div class="bg-white/10 backdrop-blur-sm rounded-xl p-6">
+                    <i class="fas fa-shield-alt text-4xl mb-3"></i>
+                    <h3 class="text-lg font-semibold mb-2">Seguro</h3>
+                    <p class="text-blue-100">Pagamento e dados protegidos</p>
+                </div>
+                <div class="bg-white/10 backdrop-blur-sm rounded-xl p-6">
+                    <i class="fas fa-clock text-4xl mb-3"></i>
+                    <h3 class="text-lg font-semibold mb-2">Rápido</h3>
+                    <p class="text-blue-100">Reserva em poucos cliques</p>
+                </div>
+                <div class="bg-white/10 backdrop-blur-sm rounded-xl p-6">
+                    <i class="fas fa-map-marked-alt text-4xl mb-3"></i>
+                    <h3 class="text-lg font-semibold mb-2">Completo</h3>
+                    <p class="text-blue-100">Rotas para todo o país</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Available Routes -->
+    <div>
+        <div class="flex items-center justify-between mb-6">
+            <h2 class="text-3xl font-bold text-gray-800">
+                <i class="fas fa-route mr-3 text-blue-600"></i>
+                Rotas Disponíveis
+            </h2>
+        </div>
+
+        {% if routes %}
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {% for route in routes %}
+                <div class="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
+                    <div class="bg-gradient-to-r from-blue-500 to-blue-600 p-4">
+                        <div class="flex items-center justify-between text-white">
+                            <div>
+                                <h3 class="font-bold text-lg">{{ route.origin }}</h3>
+                                <div class="flex items-center my-2">
+                                    <i class="fas fa-arrow-right mx-2"></i>
+                                </div>
+                                <h3 class="font-bold text-lg">{{ route.destination }}</h3>
+                            </div>
+                            <div class="text-right">
+                                <div class="bg-white/20 rounded-lg px-3 py-1 text-sm">
+                                    {{ route.bus_type }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="p-6">
+                        <div class="space-y-3 mb-4">
+                            <div class="flex items-center text-gray-600">
+                                <i class="fas fa-clock w-5"></i>
+                                <span class="ml-2">Partida: {{ route.departure_time }}</span>
+                            </div>
+                            <div class="flex items-center text-gray-600">
+                                <i class="fas fa-flag-checkered w-5"></i>
+                                <span class="ml-2">Chegada: {{ route.arrival_time }}</span>
+                            </div>
+                            <div class="flex items-center text-gray-600">
+                                <i class="fas fa-bus w-5"></i>
+                                <span class="ml-2">Placa: {{ route.plate }}</span>
+                            </div>
+                            <div class="flex items-center text-gray-600">
+                                <i class="fas fa-chair w-5"></i>
+                                <span class="ml-2">{{ route.seats }} assentos</span>
+                            </div>
+                            {% if route.intermediate_stops %}
+                            <div class="flex items-start text-gray-600">
+                                <i class="fas fa-map-marker-alt w-5 mt-1"></i>
+                                <span class="ml-2">Paradas: {{ route.intermediate_stops }}</span>
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="flex items-center justify-between">
+                            <div class="text-2xl font-bold text-green-600">
+                                R$ {{ "%.2f"|format(route.price) }}
+                            </div>
+                            <a href="{{ url_for('book_route', route_id=route.id) }}" 
+                               class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition-colors font-semibold">
+                                <i class="fas fa-ticket-alt mr-2"></i>
+                                Reservar
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="text-center py-12">
+                <div class="bg-white rounded-xl shadow-lg p-8">
+                    <i class="fas fa-route text-6xl text-gray-400 mb-4"></i>
+                    <h3 class="text-xl font-semibold text-gray-600 mb-2">Nenhuma rota disponível</h3>
+                    <p class="text-gray-500">No momento não há rotas cadastradas no sistema.</p>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

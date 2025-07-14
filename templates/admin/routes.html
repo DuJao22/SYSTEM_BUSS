@@ -1,0 +1,197 @@
+{% extends "base.html" %}
+
+{% block title %}Gerenciar Rotas - Sistema de Reserva de Ônibus{% endblock %}
+
+{% block content %}
+<div class="space-y-8">
+    <!-- Header -->
+    <div class="bg-gradient-to-r from-green-600 to-green-800 rounded-xl text-white p-6">
+        <h1 class="text-3xl font-bold mb-2">
+            <i class="fas fa-route mr-3"></i>
+            Gerenciar Rotas
+        </h1>
+        <p class="text-green-100">Cadastre e gerencie as rotas de viagem</p>
+    </div>
+
+    <!-- Add Route Form -->
+    <div class="bg-white rounded-xl shadow-lg p-6">
+        <h2 class="text-xl font-bold text-gray-800 mb-4">
+            <i class="fas fa-plus mr-2"></i>
+            Cadastrar Nova Rota
+        </h2>
+
+        <form method="POST" action="{{ url_for('add_route') }}" class="space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label for="origin" class="block text-sm font-medium text-gray-700 mb-2">
+                        Origem
+                    </label>
+                    <input type="text" 
+                           id="origin" 
+                           name="origin" 
+                           required 
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                           placeholder="São Paulo">
+                </div>
+
+                <div>
+                    <label for="destination" class="block text-sm font-medium text-gray-700 mb-2">
+                        Destino
+                    </label>
+                    <input type="text" 
+                           id="destination" 
+                           name="destination" 
+                           required 
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                           placeholder="Rio de Janeiro">
+                </div>
+            </div>
+
+            <div>
+                <label for="intermediate_stops" class="block text-sm font-medium text-gray-700 mb-2">
+                    Paradas Intermediárias (Opcional)
+                </label>
+                <input type="text" 
+                       id="intermediate_stops" 
+                       name="intermediate_stops" 
+                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                       placeholder="Aparecida, Guaratinguetá, Resende">
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div>
+                    <label for="departure_time" class="block text-sm font-medium text-gray-700 mb-2">
+                        Horário de Partida
+                    </label>
+                    <input type="time" 
+                           id="departure_time" 
+                           name="departure_time" 
+                           required 
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                </div>
+
+                <div>
+                    <label for="arrival_time" class="block text-sm font-medium text-gray-700 mb-2">
+                        Horário de Chegada
+                    </label>
+                    <input type="time" 
+                           id="arrival_time" 
+                           name="arrival_time" 
+                           required 
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                </div>
+
+                <div>
+                    <label for="price" class="block text-sm font-medium text-gray-700 mb-2">
+                        Preço (R$)
+                    </label>
+                    <input type="number" 
+                           id="price" 
+                           name="price" 
+                           step="0.01" 
+                           min="0" 
+                           required 
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                           placeholder="150.00">
+                </div>
+            </div>
+
+            <div>
+                <label for="bus_id" class="block text-sm font-medium text-gray-700 mb-2">
+                    Ônibus
+                </label>
+                <select id="bus_id" 
+                        name="bus_id" 
+                        required 
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                    <option value="">Selecione um ônibus</option>
+                    {% for bus in buses %}
+                    <option value="{{ bus.id }}">{{ bus.plate }} - {{ bus.bus_type }} ({{ bus.seats }} assentos)</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="flex justify-end">
+                <button type="submit" 
+                        class="bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors">
+                    <i class="fas fa-plus mr-2"></i>
+                    Cadastrar Rota
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Routes List -->
+    <div class="bg-white rounded-xl shadow-lg p-6">
+        <h2 class="text-xl font-bold text-gray-800 mb-4">
+            <i class="fas fa-list mr-2"></i>
+            Rotas Cadastradas
+        </h2>
+
+        {% if routes %}
+            <div class="space-y-4">
+                {% for route in routes %}
+                <div class="border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow">
+                    <div class="grid grid-cols-1 lg:grid-cols-4 gap-4">
+                        <!-- Route Info -->
+                        <div class="lg:col-span-2">
+                            <div class="flex items-center mb-3">
+                                <h3 class="text-lg font-bold text-gray-800">
+                                    {{ route.origin }}
+                                    <i class="fas fa-arrow-right mx-2 text-green-600"></i>
+                                    {{ route.destination }}
+                                </h3>
+                            </div>
+                            <div class="space-y-1 text-sm text-gray-600">
+                                <div class="flex items-center">
+                                    <i class="fas fa-clock w-5"></i>
+                                    <span class="ml-2">{{ route.departure_time }} - {{ route.arrival_time }}</span>
+                                </div>
+                                {% if route.intermediate_stops %}
+                                <div class="flex items-start">
+                                    <i class="fas fa-map-marker-alt w-5 mt-0.5"></i>
+                                    <span class="ml-2">Paradas: {{ route.intermediate_stops }}</span>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Bus Info -->
+                        <div>
+                            <h4 class="font-semibold text-gray-700 mb-2">Ônibus</h4>
+                            <div class="space-y-1 text-sm text-gray-600">
+                                <p><strong>Placa:</strong> {{ route.plate }}</p>
+                                <p><strong>Tipo:</strong> {{ route.bus_type }}</p>
+                            </div>
+                        </div>
+
+                        <!-- Price and Actions -->
+                        <div class="text-right">
+                            <div class="text-2xl font-bold text-green-600 mb-3">
+                                R$ {{ "%.2f"|format(route.price) }}
+                            </div>
+                            <div class="space-y-2">
+                                <button class="w-full bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded text-sm transition-colors">
+                                    <i class="fas fa-edit mr-1"></i>
+                                    Editar
+                                </button>
+                                <button class="w-full bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded text-sm transition-colors">
+                                    <i class="fas fa-trash mr-1"></i>
+                                    Excluir
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="text-center py-12">
+                <i class="fas fa-route text-6xl text-gray-400 mb-4"></i>
+                <h3 class="text-xl font-semibold text-gray-600 mb-2">Nenhuma rota cadastrada</h3>
+                <p class="text-gray-500">Use o formulário acima para cadastrar a primeira rota.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

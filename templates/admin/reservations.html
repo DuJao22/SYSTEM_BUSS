@@ -1,0 +1,158 @@
+{% extends "base.html" %}
+
+{% block title %}Reservas - Sistema de Reserva de Ônibus{% endblock %}
+
+{% block content %}
+<div class="space-y-8">
+    <!-- Header -->
+    <div class="bg-gradient-to-r from-purple-600 to-purple-800 rounded-xl text-white p-6">
+        <h1 class="text-3xl font-bold mb-2">
+            <i class="fas fa-ticket-alt mr-3"></i>
+            Reservas do Sistema
+        </h1>
+        <p class="text-purple-100">Visualize e gerencie todas as reservas de passagens</p>
+    </div>
+
+    <!-- Stats -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div class="bg-white rounded-xl shadow-lg p-6">
+            <div class="flex items-center">
+                <div class="bg-green-100 p-3 rounded-lg">
+                    <i class="fas fa-check-circle text-green-600 text-2xl"></i>
+                </div>
+                <div class="ml-4">
+                    <h3 class="text-lg font-semibold text-gray-800">Confirmadas</h3>
+                    <p class="text-2xl font-bold text-green-600">{{ reservations|selectattr('status', 'equalto', 'confirmed')|list|length }}</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-lg p-6">
+            <div class="flex items-center">
+                <div class="bg-blue-100 p-3 rounded-lg">
+                    <i class="fas fa-ticket-alt text-blue-600 text-2xl"></i>
+                </div>
+                <div class="ml-4">
+                    <h3 class="text-lg font-semibold text-gray-800">Total</h3>
+                    <p class="text-2xl font-bold text-blue-600">{{ reservations|length }}</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-lg p-6">
+            <div class="flex items-center">
+                <div class="bg-yellow-100 p-3 rounded-lg">
+                    <i class="fas fa-money-bill-wave text-yellow-600 text-2xl"></i>
+                </div>
+                <div class="ml-4">
+                    <h3 class="text-lg font-semibold text-gray-800">Receita Total</h3>
+                    <p class="text-xl font-bold text-yellow-600">R$ {{ "%.2f"|format(reservations|sum(attribute='price')) }}</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-lg p-6">
+            <div class="flex items-center">
+                <div class="bg-purple-100 p-3 rounded-lg">
+                    <i class="fas fa-calendar text-purple-600 text-2xl"></i>
+                </div>
+                <div class="ml-4">
+                    <h3 class="text-lg font-semibold text-gray-800">Hoje</h3>
+                    <p class="text-2xl font-bold text-purple-600">{{ reservations|selectattr('created_at', 'match', '.*' + moment().format('YYYY-MM-DD') + '.*')|list|length if moment else 0 }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reservations List -->
+    <div class="bg-white rounded-xl shadow-lg p-6">
+        <h2 class="text-xl font-bold text-gray-800 mb-4">
+            <i class="fas fa-list mr-2"></i>
+            Todas as Reservas
+        </h2>
+
+        {% if reservations %}
+            <div class="space-y-4">
+                {% for reservation in reservations %}
+                <div class="border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow">
+                    <div class="grid grid-cols-1 lg:grid-cols-5 gap-4">
+                        <!-- Route Info -->
+                        <div class="lg:col-span-2">
+                            <div class="flex items-center mb-3">
+                                <h3 class="text-lg font-bold text-gray-800">
+                                    {{ reservation.origin }}
+                                    <i class="fas fa-arrow-right mx-2 text-purple-600"></i>
+                                    {{ reservation.destination }}
+                                </h3>
+                            </div>
+                            <div class="space-y-1 text-sm text-gray-600">
+                                <div class="flex items-center">
+                                    <i class="fas fa-clock w-5"></i>
+                                    <span class="ml-2">{{ reservation.departure_time }}</span>
+                                </div>
+                                <div class="flex items-center">
+                                    <i class="fas fa-bus w-5"></i>
+                                    <span class="ml-2">{{ reservation.bus_type }} - {{ reservation.plate }}</span>
+                                </div>
+                                <div class="flex items-center">
+                                    <i class="fas fa-chair w-5"></i>
+                                    <span class="ml-2">Assento {{ reservation.seat_number }}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Passenger Info -->
+                        <div>
+                            <h4 class="font-semibold text-gray-700 mb-2">Passageiro</h4>
+                            <div class="space-y-1 text-sm text-gray-600">
+                                <p><strong>Nome:</strong> {{ reservation.passenger_name }}</p>
+                                <p><strong>CPF:</strong> {{ reservation.passenger_cpf }}</p>
+                                <p><strong>Contato:</strong> {{ reservation.passenger_contact }}</p>
+                            </div>
+                        </div>
+
+                        <!-- Booking Info -->
+                        <div>
+                            <h4 class="font-semibold text-gray-700 mb-2">Reserva</h4>
+                            <div class="space-y-1 text-sm text-gray-600">
+                                <p><strong>Bilhete:</strong> {{ reservation.ticket_number }}</p>
+                                <p><strong>Data:</strong> {{ reservation.created_at.split(' ')[0] }}</p>
+                                <div class="mt-2">
+                                    <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-semibold">
+                                        {{ reservation.status|title }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Price and Actions -->
+                        <div class="text-right">
+                            <div class="text-2xl font-bold text-green-600 mb-3">
+                                R$ {{ "%.2f"|format(reservation.price) }}
+                            </div>
+                            <div class="space-y-2">
+                                <a href="{{ url_for('ticket', ticket_number=reservation.ticket_number) }}" 
+                                   class="block w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded text-sm text-center transition-colors">
+                                    <i class="fas fa-eye mr-1"></i>
+                                    Ver Bilhete
+                                </a>
+                                <button class="w-full bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded text-sm transition-colors">
+                                    <i class="fas fa-times mr-1"></i>
+                                    Cancelar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="text-center py-12">
+                <i class="fas fa-ticket-alt text-6xl text-gray-400 mb-4"></i>
+                <h3 class="text-xl font-semibold text-gray-600 mb-2">Nenhuma reserva encontrada</h3>
+                <p class="text-gray-500">Ainda não há reservas no sistema.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

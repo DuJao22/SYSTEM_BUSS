@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard Admin - Sistema de Reserva de Ônibus{% endblock %}
+
+{% block content %}
+<div class="space-y-8">
+    <!-- Header -->
+    <div class="bg-gradient-to-r from-purple-600 to-blue-700 rounded-xl text-white p-6">
+        <h1 class="text-3xl font-bold mb-2">
+            <i class="fas fa-tachometer-alt mr-3"></i>
+            Dashboard Administrativo
+        </h1>
+        <p class="text-purple-100">Gerencie todo o sistema de reservas de ônibus</p>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="bg-white rounded-xl shadow-lg p-6">
+            <div class="flex items-center">
+                <div class="bg-blue-100 p-3 rounded-lg">
+                    <i class="fas fa-bus text-blue-600 text-2xl"></i>
+                </div>
+                <div class="ml-4">
+                    <h3 class="text-lg font-semibold text-gray-800">Total de Ônibus</h3>
+                    <p class="text-3xl font-bold text-blue-600">{{ stats.total_buses }}</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-lg p-6">
+            <div class="flex items-center">
+                <div class="bg-green-100 p-3 rounded-lg">
+                    <i class="fas fa-route text-green-600 text-2xl"></i>
+                </div>
+                <div class="ml-4">
+                    <h3 class="text-lg font-semibold text-gray-800">Rotas Ativas</h3>
+                    <p class="text-3xl font-bold text-green-600">{{ stats.total_routes }}</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-lg p-6">
+            <div class="flex items-center">
+                <div class="bg-purple-100 p-3 rounded-lg">
+                    <i class="fas fa-ticket-alt text-purple-600 text-2xl"></i>
+                </div>
+                <div class="ml-4">
+                    <h3 class="text-lg font-semibold text-gray-800">Reservas Totais</h3>
+                    <p class="text-3xl font-bold text-purple-600">{{ stats.total_reservations }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div>
+        <h2 class="text-2xl font-bold text-gray-800 mb-6">
+            <i class="fas fa-bolt mr-2"></i>
+            Ações Rápidas
+        </h2>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <a href="{{ url_for('admin_buses') }}" class="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow group">
+                <div class="text-center">
+                    <div class="bg-blue-100 p-4 rounded-lg inline-block group-hover:bg-blue-200 transition-colors">
+                        <i class="fas fa-bus text-blue-600 text-3xl"></i>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-800 mt-4">Gerenciar Ônibus</h3>
+                    <p class="text-gray-600 text-sm mt-2">Cadastrar e editar ônibus</p>
+                </div>
+            </a>
+
+            <a href="{{ url_for('admin_routes') }}" class="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow group">
+                <div class="text-center">
+                    <div class="bg-green-100 p-4 rounded-lg inline-block group-hover:bg-green-200 transition-colors">
+                        <i class="fas fa-route text-green-600 text-3xl"></i>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-800 mt-4">Gerenciar Rotas</h3>
+                    <p class="text-gray-600 text-sm mt-2">Cadastrar e editar rotas</p>
+                </div>
+            </a>
+
+            <a href="{{ url_for('admin_reservations') }}" class="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow group">
+                <div class="text-center">
+                    <div class="bg-purple-100 p-4 rounded-lg inline-block group-hover:bg-purple-200 transition-colors">
+                        <i class="fas fa-ticket-alt text-purple-600 text-3xl"></i>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-800 mt-4">Ver Reservas</h3>
+                    <p class="text-gray-600 text-sm mt-2">Visualizar todas as reservas</p>
+                </div>
+            </a>
+
+            <a href="{{ url_for('index') }}" class="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow group">
+                <div class="text-center">
+                    <div class="bg-orange-100 p-4 rounded-lg inline-block group-hover:bg-orange-200 transition-colors">
+                        <i class="fas fa-home text-orange-600 text-3xl"></i>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-800 mt-4">Site Principal</h3>
+                    <p class="text-gray-600 text-sm mt-2">Voltar ao site público</p>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="bg-white rounded-xl shadow-lg p-6">
+        <h2 class="text-xl font-bold text-gray-800 mb-4">
+            <i class="fas fa-clock mr-2"></i>
+            Sistema em Funcionamento
+        </h2>
+        <div class="space-y-3">
+            <div class="flex items-center text-green-600">
+                <i class="fas fa-check-circle mr-3"></i>
+                <span>Banco de dados conectado e funcionando</span>
+            </div>
+            <div class="flex items-center text-green-600">
+                <i class="fas fa-check-circle mr-3"></i>
+                <span>Sistema de reservas ativo</span>
+            </div>
+            <div class="flex items-center text-green-600">
+                <i class="fas fa-check-circle mr-3"></i>
+                <span>Interface responsiva funcionando</span>
+            </div>
+            <div class="flex items-center text-blue-600">
+                <i class="fas fa-info-circle mr-3"></i>
+                <span>Use este painel para gerenciar todo o sistema</span>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

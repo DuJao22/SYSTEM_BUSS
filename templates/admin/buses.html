@@ -1,0 +1,154 @@
+{% extends "base.html" %}
+
+{% block title %}Gerenciar Ônibus - Sistema de Reserva de Ônibus{% endblock %}
+
+{% block content %}
+<div class="space-y-8">
+    <!-- Header -->
+    <div class="bg-gradient-to-r from-blue-600 to-blue-800 rounded-xl text-white p-6">
+        <h1 class="text-3xl font-bold mb-2">
+            <i class="fas fa-bus mr-3"></i>
+            Gerenciar Ônibus
+        </h1>
+        <p class="text-blue-100">Cadastre e gerencie a frota de ônibus</p>
+    </div>
+
+    <!-- Add Bus Form -->
+    <div class="bg-white rounded-xl shadow-lg p-6">
+        <h2 class="text-xl font-bold text-gray-800 mb-4">
+            <i class="fas fa-plus mr-2"></i>
+            Cadastrar Novo Ônibus
+        </h2>
+
+        <form method="POST" action="{{ url_for('add_bus') }}" class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div>
+                <label for="plate" class="block text-sm font-medium text-gray-700 mb-2">
+                    Placa
+                </label>
+                <input type="text" 
+                       id="plate" 
+                       name="plate" 
+                       required 
+                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                       placeholder="ABC-1234">
+            </div>
+
+            <div>
+                <label for="seats" class="block text-sm font-medium text-gray-700 mb-2">
+                    Número de Assentos
+                </label>
+                <input type="number" 
+                       id="seats" 
+                       name="seats" 
+                       required 
+                       min="20" 
+                       max="60"
+                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                       placeholder="42">
+            </div>
+
+            <div>
+                <label for="bus_type" class="block text-sm font-medium text-gray-700 mb-2">
+                    Tipo de Ônibus
+                </label>
+                <select id="bus_type" 
+                        name="bus_type" 
+                        required 
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    <option value="">Selecione o tipo</option>
+                    <option value="Convencional">Convencional</option>
+                    <option value="Executivo">Executivo</option>
+                    <option value="Leito">Leito</option>
+                </select>
+            </div>
+
+            <div class="flex items-end">
+                <button type="submit" 
+                        class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-lg transition-colors">
+                    <i class="fas fa-plus mr-2"></i>
+                    Cadastrar
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Buses List -->
+    <div class="bg-white rounded-xl shadow-lg p-6">
+        <h2 class="text-xl font-bold text-gray-800 mb-4">
+            <i class="fas fa-list mr-2"></i>
+            Ônibus Cadastrados
+        </h2>
+
+        {% if buses %}
+            <div class="overflow-x-auto">
+                <table class="w-full table-auto">
+                    <thead>
+                        <tr class="bg-gray-50">
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Placa
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Assentos
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Tipo
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Data de Cadastro
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Ações
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        {% for bus in buses %}
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="flex items-center">
+                                    <i class="fas fa-bus text-blue-600 mr-2"></i>
+                                    <span class="font-semibold text-gray-800">{{ bus.plate }}</span>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-600">
+                                <i class="fas fa-chair mr-1"></i>
+                                {{ bus.seats }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="px-3 py-1 rounded-full text-sm font-semibold
+                                    {% if bus.bus_type == 'Convencional' %}bg-blue-100 text-blue-800
+                                    {% elif bus.bus_type == 'Executivo' %}bg-green-100 text-green-800
+                                    {% else %}bg-purple-100 text-purple-800{% endif %}">
+                                    {{ bus.bus_type }}
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-600">
+                                {{ bus.created_at.split(' ')[0] }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="flex space-x-2">
+                                    <button class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded text-sm transition-colors">
+                                        <i class="fas fa-edit mr-1"></i>
+                                        Editar
+                                    </button>
+                                    <button class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm transition-colors">
+                                        <i class="fas fa-trash mr-1"></i>
+                                        Excluir
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="text-center py-12">
+                <i class="fas fa-bus text-6xl text-gray-400 mb-4"></i>
+                <h3 class="text-xl font-semibold text-gray-600 mb-2">Nenhum ônibus cadastrado</h3>
+                <p class="text-gray-500">Use o formulário acima para cadastrar o primeiro ônibus.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
